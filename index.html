@@ -1,0 +1,1193 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>助农农产品集散产销系统 · Demo</title>
+<style>
+:root{--green-dark:#1a5f2a;--green:#389e0d;--green-light:#52c41a;--amber:#d48806;--blue:#0958d9;--red:#cf1322;--bg:#f0f7ec;--card:#fff;--text:#1a1a1a;--muted:#666;--border:#d9d9d9;--shadow:0 4px 16px rgba(0,0,0,.1);--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+.login-screen{min-height:100vh;background:linear-gradient(135deg,#0d3a16 0%,#1a5f2a 40%,#389e0d 70%,#73d13d 100%);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:#fff;border-radius:20px;padding:40px 44px;width:100%;max-width:440px;box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.login-logo{text-align:center;margin-bottom:8px}
+.login-logo .icon{font-size:52px;display:block;margin-bottom:8px}
+.login-title{font-size:22px;font-weight:700;color:#1a5f2a;text-align:center}
+.login-subtitle{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 28px}
+.demo-label{font-size:13px;color:var(--muted);margin-bottom:10px;text-align:center}
+.role-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:24px 0}
+.role-card{padding:20px 16px;border-radius:var(--radius);border:2px solid #e6f4ea;text-align:center;cursor:pointer;transition:all .2s;background:var(--card)}
+.role-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:var(--shadow)}
+.role-card .emoji{font-size:36px;display:block;margin-bottom:8px}
+.role-card h3{font-size:15px;font-weight:600;color:var(--green-dark);margin-bottom:4px}
+.role-card p{font-size:12px;color:var(--muted)}
+.role-card .badge{display:inline-block;padding:2px 8px;background:var(--green);color:#fff;border-radius:10px;font-size:11px;margin-top:6px}
+.app-header{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 8px rgba(0,0,0,.06);position:sticky;top:0;z-index:100;border-bottom:1px solid #f0f0f0}
+.app-header-left{display:flex;align-items:center;gap:12px}
+.app-logo{font-size:22px}
+.app-role-tag{padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600}
+.app-nav{display:flex;gap:4px;flex-wrap:wrap}
+.app-nav-btn{padding:6px 14px;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:13px;transition:all .15s;font-weight:500;font-family:inherit}
+.app-nav-btn:hover{background:#f5f7fa;color:var(--text)}
+.app-nav-btn.active{background:#e6f4ea;color:var(--green-dark)}
+.app-user{display:flex;align-items:center;gap:10px;font-size:13px}
+.app-user .avatar{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.logout-btn{padding:5px 12px;border-radius:6px;border:1px solid #d9d9d9;background:#fff;cursor:pointer;font-size:12px;font-family:inherit}
+.app-content{padding:24px;max-width:1400px;margin:0 auto}
+.page-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:20px 22px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid #f0f0f0}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.stat-value{font-size:28px;font-weight:700;color:var(--text)}
+.stat-value.green{color:var(--green)}.stat-value.amber{color:var(--amber)}.stat-value.red{color:var(--red)}.stat-value.blue{color:var(--blue)}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.data-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.data-table th{background:#fafafa;padding:12px 16px;text-align:left;font-size:12px;color:var(--muted);font-weight:600;border-bottom:1px solid #f0f0f0}
+.data-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f5f7fa;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#fcfdf7}
+.tag{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.tag-green{background:#e6f4ea;color:var(--green)}.tag-amber{background:#fff7e6;color:var(--amber)}.tag-red{background:#fff1f0;color:var(--red)}.tag-blue{background:#e6f0ff;color:var(--blue)}.tag-gray{background:#f5f5f5;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;font-family:inherit}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:#2d8a45;transform:translateY(-1px);box-shadow:0 4px 12px rgba(56,158,13,.3)}
+.btn-secondary{background:#f5f7fa;color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:#e8e8e8}
+.btn-danger{background:#fff1f0;color:var(--red);border:1px solid #ffa39e}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-lg{padding:11px 24px;font-size:15px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-block{width:100%;justify-content:center}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:13px;font-weight:600;color:var(--text)}
+.form-input,.form-select{padding:9px 12px;border:1.5px solid #d9d9d9;border-radius:8px;font-size:13px;outline:none;transition:border-color .15s;background:#fff;font-family:inherit}
+.form-input:focus,.form-select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(56,158,13,.1)}
+.form-input-number{padding:9px 12px;border:1.5px solid #d9d9d9;border-radius:8px;font-size:13px;width:120px;outline:none;font-family:inherit}
+.form-input-number:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(56,158,13,.1)}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid #f0f0f0;margin-bottom:20px}
+.card-header{padding:16px 20px;border-bottom:1px solid #f0f7ec;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.card-body{padding:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:900px){.grid-2{grid-template-columns:1fr}}
+@media (max-width:768px){
+.app-header{position:fixed;top:0;left:0;right:0}
+.hamburger{display:flex;align-items:center;justify-content:center}
+.app-nav,.app-role-tag,.logout-btn{display:none!important}
+.app-content{padding:16px;padding-top:72px}
+.page-title{font-size:18px;margin-bottom:16px}
+.stats-grid{grid-template-columns:1fr 1fr!important;gap:10px}
+.stat-card{padding:14px}
+.stat-value{font-size:22px}
+.card-body{overflow-x:auto}
+.data-table{font-size:11px}
+.data-table th,.data-table td{padding:8px 10px;white-space:nowrap}
+.login-card{padding:24px 16px}
+}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:#f5f7fa;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.modal-close:hover{background:#e8e8e8}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;gap:10px;justify-content:flex-end}
+.timeline{padding:10px 0}
+.timeline-item{display:flex;gap:14px;margin-bottom:18px;position:relative}
+.timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;position:relative;z-index:1}
+.timeline-item:last-child .timeline-dot{background:#d9d9d9}
+.timeline-dot::after{content:'';position:absolute;left:4px;top:14px;bottom:-18px;width:2px;background:#e8e8e8}
+.timeline-item:last-child .timeline-dot::after{display:none}
+.timeline-content{flex:1}
+.timeline-title{font-size:13px;font-weight:700;color:var(--text)}
+.timeline-detail{font-size:12px;color:var(--muted);margin-top:2px}
+.timeline-time{font-size:11px;color:#aaa;margin-top:2px}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;padding:10px 0}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;max-width:48px;border-radius:4px 4px 0 0;transition:height .6s ease;min-height:4px}
+.chart-bar-label{font-size:11px;color:var(--muted)}
+.chart-bar-value{font-size:11px;font-weight:700;color:var(--text)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.product-card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid #f0f0f0;transition:all .2s}
+.product-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.product-img{height:80px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.product-info{padding:14px}
+.product-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.product-meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+.product-price{font-size:20px;font-weight:700;color:var(--red)}
+.product-price span{font-size:12px;font-weight:400;color:var(--muted)}
+.product-stock{font-size:11px;color:var(--muted);margin-top:4px}
+.product-actions{padding:10px 14px;border-top:1px solid #f5f7fa;display:flex;gap:8px;align-items:center}
+.product-qty{width:70px;padding:5px 8px;border:1.5px solid #d9d9d9;border-radius:6px;font-size:12px;text-align:center;font-family:inherit}
+.hero-banner{background:linear-gradient(135deg,#0d3a16,#1a5f2a,#389e0d);color:#fff;border-radius:var(--radius);padding:28px;margin-bottom:24px}
+.hero-banner h2{font-size:24px;font-weight:700;margin-bottom:6px}
+.hero-banner p{opacity:.85;font-size:14px}
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted)}
+.empty-state .emoji{font-size:48px;display:block;margin-bottom:12px}
+.empty-state p{font-size:14px}
+.toast{position:fixed;top:70px;right:20px;background:#fff;border-radius:10px;padding:12px 18px;box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:9999;display:none;font-size:13px;font-weight:500;align-items:center;gap:10px;max-width:320px}
+.toast.show{display:flex;animation:slideIn .3s ease}
+.toast-icon{font-size:20px}
+.toast-success{border-left:4px solid var(--green)}.toast-success .toast-icon{color:var(--green)}
+.toast-error{border-left:4px solid var(--red)}.toast-error .toast-icon{color:var(--red)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.cart-bar{background:var(--card);border-radius:var(--radius);padding:14px 20px;box-shadow:0 -4px 16px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border:2px solid var(--green)}
+.cart-count{font-size:14px;font-weight:700;color:var(--green-dark)}
+.pickup-code-box{text-align:center;padding:32px;background:#e6f4ea;border-radius:var(--radius);border:2px dashed var(--green)}
+.pickup-code{font-size:36px;font-weight:700;color:var(--green-dark);letter-spacing:6px;font-family:monospace}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.screen.active{animation:fadeIn .3s ease}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast">
+  <span class="toast-icon"></span>
+  <span class="toast-msg"></span>
+</div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="icon">&#x1F33E;</span>
+        <div class="login-title">助农农产品集散产销系统</div>
+      </div>
+      <div class="login-subtitle">城乡生鲜直供闭环 &middot; Demo 演示版</div>
+      <div class="demo-label">点击角色卡片直接进入</div>
+      <div class="role-cards">
+        <div class="role-card" onclick="loginAs('admin')">
+          <span class="emoji">&#x1F3E2;</span>
+          <h3>总管理后台</h3>
+          <p>数据大屏 &middot; 财务结算</p>
+          <span class="badge">最高权限</span>
+        </div>
+        <div class="role-card" onclick="loginAs('station')">
+          <span class="emoji">&#x1F3E1;</span>
+          <h3>乡村中转站</h3>
+          <p>农户建档 &middot; 收货发货</p>
+        </div>
+        <div class="role-card" onclick="loginAs('warehouse')">
+          <span class="emoji">&#x1F3ED;</span>
+          <h3>仓储物流</h3>
+          <p>质检溯源 &middot; 配送调度</p>
+        </div>
+        <div class="role-card" onclick="loginAs('store')">
+          <span class="emoji">&#x1F3EA;</span>
+          <h3>城市门店</h3>
+          <p>入库核销 &middot; 库存售卖</p>
+        </div>
+        <div class="role-card" onclick="loginAs('consumer')">
+          <span class="emoji">&#x1F6D2;</span>
+          <h3>城市用户</h3>
+          <p>选购下单 &middot; 溯源查询</p>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:#aaa;margin-top:8px">
+        推荐演示流程：中转站收货 &rarr; 总仓质检 &rarr; 门店上架 &rarr; 用户下单 &rarr; 核销
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell" style="display:none">
+  <header class="app-header">
+    <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+    <div class="app-header-left">
+      <span class="app-logo">&#x1F33E;</span>
+      <strong style="font-size:15px;color:var(--green-dark)">助农产销</strong>
+      <span id="header-role" class="app-role-tag"></span>
+    </div>
+    <nav class="app-nav" id="app-nav"></nav>
+    <div class="app-user">
+      <div class="avatar" id="header-avatar"></div>
+      <span id="header-name"></span>
+      <button class="logout-btn" onclick="logout()">退出</button>
+    </div>
+  </header>
+  <div class="mobile-nav" id="mobile-nav"></div>
+  <main class="app-content" id="app-content"></main>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="modal-title">标题</span>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+var STORE = {
+  categories:[
+    {id:1,name:'土鸡蛋',unit:'斤',purchasePrice:12,guidePrice:18,icon:'&#x1F95A;',color:'#f5d76e'},
+    {id:2,name:'时令蔬菜',unit:'斤',purchasePrice:3,guidePrice:6,icon:'&#x1F96C;',color:'#58d68d'},
+    {id:3,name:'散养土鸡',unit:'只',purchasePrice:80,guidePrice:128,icon:'&#x1F414;',color:'#f0b27a'},
+    {id:4,name:'生态草鱼',unit:'斤',purchasePrice:15,guidePrice:25,icon:'&#x1F41F;',color:'#85c1e9'},
+  ],
+  stations:[
+    {id:1,name:'桃花镇中转站',town:'桃花镇',address:'四川省某县桃花镇农贸市场旁'},
+    {id:2,name:'石桥镇中转站',town:'石桥镇',address:'四川省某县石桥镇卫生院对面'},
+  ],
+  warehouses:[{id:1,name:'县域总仓冷链中心',address:'某县物流园A区3号库'}],
+  stores:[
+    {id:1,name:'成都春熙路社区店',city:'成都',address:'锦江区春熙路88号',warehouseId:1},
+    {id:2,name:'成都天府新区店',city:'成都',address:'天府新区益州大道168号',warehouseId:1},
+  ],
+  farmers:[
+    {id:1,code:'FN2026001',name:'张大爷',phone:'13800001111',village:'桃花村',address:'桃花村3组12号',stationId:1},
+    {id:2,code:'FN2026002',name:'李婆婆',phone:'13800002222',village:'桃花村',address:'桃花村5组8号',stationId:1},
+    {id:3,code:'FN2026003',name:'王叔',phone:'13800003333',village:'石桥村',address:'石桥村2组6号',stationId:2},
+    {id:4,code:'FN2026004',name:'赵阿姨',phone:'13800004444',village:'桃花村',address:'桃花村7组3号',stationId:1},
+    {id:5,code:'FN2026005',name:'孙大爷',phone:'13800005555',village:'石桥村',address:'石桥村4组9号',stationId:2},
+  ],
+  supplyOrders:[],
+  receiveRecords:[],
+  batches:[],
+  shipments:[],
+  warehouseInventory:[],
+  deliveries:[],
+  storeInventory:[],
+  consumerOrders:[],
+  settlements:[],
+  afterSales:[],
+  _ids:{batch:1,order:1,delivery:1,shipment:1,settlement:1,as:1,inv:1,farmer:6},
+};
+
+var ROLES = {
+  admin:{name:'系统管理员',roleTag:'总管理后台',color:'#1a5f2a',bg:'#e6f4ea',nav:[
+    {key:'overview',label:'数据大屏'},{key:'farmerMgmt',label:'农户管理'},
+    {key:'priceMgmt',label:'价格管理'},{key:'settlement',label:'农户结算'},{key:'afterSales',label:'售后管理'},
+  ]},
+  station:{name:'桃花站员小刘',roleTag:'乡村中转站',color:'#237804',bg:'#f6ffed',nav:[
+    {key:'stationOverview',label:'站点概览'},{key:'farmerReg',label:'农户建档'},
+    {key:'receive',label:'收货登记'},{key:'ship',label:'发货申请'},
+  ]},
+  warehouse:{name:'总仓管理员老赵',roleTag:'仓储物流',color:'#0958d9',bg:'#e6f0ff',nav:[
+    {key:'warehouseOverview',label:'仓库概览'},{key:'inbound',label:'到货入库'},
+    {key:'qc',label:'质检溯源'},{key:'delivery',label:'门店配送'},
+  ]},
+  store:{name:'春熙路店长',roleTag:'城市门店',color:'#d48806',bg:'#fff7e6',nav:[
+    {key:'storeOverview',label:'门店概览'},{key:'storeInbound',label:'收货入库'},
+    {key:'inventory',label:'库存售卖'},{key:'orders',label:'订单核销'},
+  ]},
+  consumer:{name:'成都用户王女士',roleTag:'城市用户',color:'#531dab',bg:'#f9f0ff',nav:[
+    {key:'shop',label:'选购商品'},{key:'myOrders',label:'我的订单'},
+    {key:'trace',label:'溯源查询'},
+  ]},
+};
+
+var CURRENT_ROLE = null;
+var currentPage = null;
+var CART = [];
+
+function genId(t){return STORE._ids[t]++;}
+function genCode(p){return p+Math.random().toString(36).slice(2,8).toUpperCase();}
+function today(){return new Date().toLocaleDateString('zh-CN');}
+function now(){return new Date().toLocaleString('zh-CN',{hour:'2-digit',minute:'2-digit'});}
+function catName(id){var c=STORE.categories.find(function(x){return x.id===id;});return c?c.name:id;}
+function catIcon(id){var c=STORE.categories.find(function(x){return x.id===id;});return c?c.icon:'';}
+function catUnit(id){var c=STORE.categories.find(function(x){return x.id===id;});return c?c.unit:'';}
+function catPrice(id){var c=STORE.categories.find(function(x){return x.id===id;});return c?c.guidePrice:0;}
+function catColor(id){var c=STORE.categories.find(function(x){return x.id===id;});return c?c.color:'#eee';}
+function farmerName(id){var f=STORE.farmers.find(function(x){return x.id===id;});return f?f.name:'';}
+function stationName(id){var s=STORE.stations.find(function(x){return x.id===id;});return s?s.name:'';}
+function storeName(id){var s=STORE.stores.find(function(x){return x.id===id;});return s?s.name:'';}
+
+function tag(status){
+  var map={
+    pending:['待处理','amber'],received:['已收货','green'],at_station:['在站点','blue'],
+    in_transit:['运输中','blue'],in_warehouse:['在总仓','green'],sold:['已售','gray'],
+    completed:['已完成','green'],pending_pickup:['待自提','amber'],open:['待处理','red'],
+    resolved:['已处理','green'],paid:['已结算','green'],pass:['合格','green'],
+    fail:['不合格','red'],A:['A级·优品','green'],B:['B级·普品','amber'],
+  };
+  var m=map[status]||[status,'gray'];
+  return '<span class="tag tag-'+m[1]+'">'+m[0]+'</span>';
+}
+
+function showToast(msg,type){
+  type=type||'success';
+  var t=document.getElementById('toast');
+  t.className='toast toast-'+type;
+  t.querySelector('.toast-icon').textContent=type==='success'?'&#x2705;':'&#x274C;';
+  t.querySelector('.toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function loginAs(role){
+  CURRENT_ROLE=role;
+  var r=ROLES[role];
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('app-shell').style.display='block';
+  document.getElementById('header-name').textContent=r.name;
+  document.getElementById('header-avatar').textContent=r.name[0];
+  document.getElementById('header-role').textContent=r.roleTag;
+  document.getElementById('header-role').style.background=r.bg;
+  document.getElementById('header-role').style.color=r.color;
+  renderNav(r.nav);
+  renderMobileNav();
+  navigateTo(r.nav[0].key);
+}
+
+function toggleMobileNav(){
+  var nav=document.getElementById('mobile-nav');
+  nav.classList.toggle('show');
+}
+function renderMobileNav(){
+  var nav=document.getElementById('mobile-nav');
+  var html='';
+  ROLES[CURRENT_ROLE].nav.forEach(function(item){
+    html+='<button class="mobile-nav-btn'+(item.key===currentPage?' active':'')+'" onclick="navigateTo(\''+item.key+'\')">'+item.label+'</button>';
+  });
+  html+='<button class="mobile-nav-btn" style="color:var(--red)" onclick="logout()">退出登录</button>';
+  nav.innerHTML=html;
+}
+function navigate(pageKey){
+  document.getElementById('mobile-nav').classList.remove('show');
+  navigateTo(pageKey);
+}
+
+function logout(){
+  CURRENT_ROLE=null;
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('screen-login').classList.add('active');
+}
+
+function renderNav(navItems){
+  var nav=document.getElementById('app-nav');
+  nav.innerHTML='';
+  navItems.forEach(function(item){
+    var btn=document.createElement('button');
+    btn.className='app-nav-btn';
+    btn.textContent=item.label;
+    btn.dataset.key=item.key;
+    btn.onclick=function(){navigateTo(item.key);};
+    nav.appendChild(btn);
+  });
+}
+
+function navigateTo(key){
+  currentPage=key;
+  document.querySelectorAll('.app-nav-btn').forEach(function(b){b.classList.remove('active');});
+  var active=document.querySelector('.app-nav-btn[data-key="'+key+'"]');
+  if(active)active.classList.add('active');
+  document.querySelectorAll('.mobile-nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelector('.mobile-nav-btn[onclick*="'+key+'"]').classList.add('active');
+  var content=document.getElementById('app-content');
+  switch(key){
+    case'overview':renderAdminOverview();break;
+    case'farmerMgmt':renderAdminFarmerMgmt();break;
+    case'priceMgmt':renderPriceMgmt();break;
+    case'settlement':renderSettlement();break;
+    case'afterSales':renderAfterSales();break;
+    case'stationOverview':renderStationOverview();break;
+    case'farmerReg':renderFarmerReg();break;
+    case'receive':renderReceive();break;
+    case'ship':renderShip();break;
+    case'warehouseOverview':renderWarehouseOverview();break;
+    case'inbound':renderInbound();break;
+    case'qc':renderQC();break;
+    case'delivery':renderDelivery();break;
+    case'storeOverview':renderStoreOverview();break;
+    case'storeInbound':renderStoreInbound();break;
+    case'inventory':renderInventory();break;
+    case'orders':renderStoreOrders();break;
+    case'shop':renderShop();break;
+    case'myOrders':renderMyOrders();break;
+    case'trace':renderTraceSearch();break;
+  }
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(title,bodyHtml,footerHtml){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=bodyHtml;
+  document.getElementById('modal-footer').innerHTML=footerHtml;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+
+// ============================================================
+// ===== ADMIN =====
+// ============================================================
+function renderAdminOverview(){
+  var totalReceive=STORE.receiveRecords.reduce(function(s,r){return s+r.quantity;},0);
+  var totalSales=STORE.consumerOrders.filter(function(o){return o.status==='completed';}).reduce(function(s,o){return s+o.totalAmount;},0);
+  var pendingSettle=STORE.settlements.filter(function(s){return s.status==='pending';}).reduce(function(s,o){return s+o.amount;},0);
+  var catStats=STORE.categories.map(function(c){
+    return Object.assign({},c,{received:STORE.receiveRecords.filter(function(r){return r.categoryId===c.id;}).reduce(function(s,r){return s+r.quantity;},0)});
+  });
+  var c='<div class="page-title">&#x1F4CA; 全局指挥大屏</div>';
+  c+='<div class="stats-grid">';
+  c+='<div class="stat-card"><div class="stat-label">注册农户</div><div class="stat-value green">'+STORE.farmers.length+'</div><div class="stat-sub">户</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">今日收货</div><div class="stat-value green">'+totalReceive.toFixed(1)+'</div><div class="stat-sub">斤/只</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">总仓库存</div><div class="stat-value blue">'+STORE.warehouseInventory.reduce(function(s,i){return s+i.quantity;},0).toFixed(1)+'</div><div class="stat-sub">斤/只</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">门店库存</div><div class="stat-value blue">'+STORE.storeInventory.reduce(function(s,i){return s+i.quantity;},0).toFixed(1)+'</div><div class="stat-sub">斤/只</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">今日销售额</div><div class="stat-value amber">&#xA5;'+totalSales.toFixed(2)+'</div><div class="stat-sub">已完成</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">待结算农户款</div><div class="stat-value red">&#xA5;'+pendingSettle.toFixed(2)+'</div><div class="stat-sub">'+STORE.settlements.filter(function(s){return s.status==='pending';}).length+' 笔</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">待核销订单</div><div class="stat-value amber">'+STORE.consumerOrders.filter(function(o){return o.status==='pending_pickup';}).length+'</div><div class="stat-sub">单</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">待处理售后</div><div class="stat-value red">'+STORE.afterSales.filter(function(a){return a.status==='open';}).length+'</div><div class="stat-sub">件</div></div>';
+  c+='</div>';
+  c+='<div class="grid-2">';
+  c+='<div class="card"><div class="card-header"><div class="card-title">&#x1F33F; 品类收货统计</div></div><div class="card-body">';
+  c+='<div class="chart-bars">';
+  var maxR=Math.max.apply(null,catStats.map(function(c){return c.received||1;}));
+  catStats.forEach(function(c){
+    var h=Math.max(4,(c.received/maxR)*100);
+    c+='<div class="chart-bar-wrap"><div class="chart-bar-value">'+c.received.toFixed(0)+'</div>';
+    c+='<div class="chart-bar" style="height:'+h+'px;background:'+catColor(c.id)+'"></div>';
+    c+='<div class="chart-bar-label">'+c.icon+' '+c.name.substr(0,2)+'</div></div>';
+  });
+  c+='</div></div></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">&#x1F517; 供应链链路状态</div></div><div class="card-body">';
+  c+='<div class="timeline">';
+  c+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">农户建档</div><div class="timeline-detail">'+STORE.farmers.length+' 户农户已登记</div><div class="timeline-time">实时</div></div></div>';
+  c+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">中转站收货</div><div class="timeline-detail">'+STORE.receiveRecords.length+' 批次已收货</div><div class="timeline-time">今日 '+STORE.receiveRecords.filter(function(r){return r.time&&r.time.startsWith(today());}).length+' 笔</div></div></div>';
+  c+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">总仓质检入库</div><div class="timeline-detail">'+STORE.warehouseInventory.length+' 个批次在库</div><div class="timeline-time">库存 '+STORE.warehouseInventory.reduce(function(s,i){return s+i.quantity;},0).toFixed(1)+' 斤</div></div></div>';
+  c+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">门店配送</div><div class="timeline-detail">'+STORE.deliveries.length+' 配送单</div><div class="timeline-time">在途 '+STORE.deliveries.filter(function(d){return d.status==='in_transit';}).length+'</div></div></div>';
+  c+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">用户下单</div><div class="timeline-detail">'+STORE.consumerOrders.length+' 笔订单 &#xB7; &#xA5;'+totalSales.toFixed(2)+' 销售额</div><div class="timeline-time">待核销 '+STORE.consumerOrders.filter(function(o){return o.status==='pending_pickup';}).length+' 单</div></div></div>';
+  c+='</div></div></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function renderAdminFarmerMgmt(){
+  var c='<div class="page-title">&#x1F468;&#x200D;&#x1F33E; 农户管理</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">全部农户（'+STORE.farmers.length+' 户）</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>编号</th><th>姓名</th><th>电话</th><th>村镇</th><th>所属站点</th><th>地址</th></tr></thead><tbody>';
+  STORE.farmers.forEach(function(f){
+    c+='<tr><td>'+f.code+'</td><td>'+f.name+'</td><td>'+f.phone+'</td><td>'+f.village+'</td><td>'+stationName(f.stationId)+'</td><td>'+f.address+'</td></tr>';
+  });
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function renderPriceMgmt(){
+  var c='<div class="page-title">&#x1F4B0; 产品价格管理</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">收购价 / 指导价设置</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>品类</th><th>单位</th><th>农户收购价(元)</th><th>门店指导价(元)</th><th>操作</th></tr></thead><tbody>';
+  STORE.categories.forEach(function(cat){
+    c+='<tr><td>'+cat.icon+' '+cat.name+'</td><td>'+cat.unit+'</td>';
+    c+='<td><input type="number" class="form-input-number" value="'+cat.purchasePrice+'" id="pp-'+cat.id+'" style="width:90px"></td>';
+    c+='<td><input type="number" class="form-input-number" value="'+cat.guidePrice+'" id="gp-'+cat.id+'" style="width:90px"></td>';
+    c+='<td><button class="btn btn-sm btn-primary" onclick="savePrice('+cat.id+')">保存</button></td></tr>';
+  });
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+function savePrice(id){
+  var cat=STORE.categories.find(function(c){return c.id===id;});
+  cat.purchasePrice=parseFloat(document.getElementById('pp-'+id).value);
+  cat.guidePrice=parseFloat(document.getElementById('gp-'+id).value);
+  showToast('价格已更新');
+}
+
+function renderSettlement(){
+  var c='<div class="page-title">&#x1F9DD; 农户供货结算</div>';
+  var pending=STORE.settlements.filter(function(s){return s.status==='pending';});
+  c+='<div class="card"><div class="card-header"><div class="card-title">待结算 '+pending.length+' 笔 &#xB7; &#xA5;'+pending.reduce(function(s,o){return s+o.amount;},0).toFixed(2)+'</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>农户</th><th>品类</th><th>供货量</th><th>结算金额</th><th>状态</th><th>时间</th><th>操作</th></tr></thead><tbody>';
+  if(STORE.settlements.length===0){
+    c+='<tr><td colspan="7" style="text-align:center;color:#999;padding:40px">暂无结算记录</td></tr>';
+  } else {
+    STORE.settlements.forEach(function(s){
+      c+='<tr><td>'+farmerName(s.farmerId)+'</td>';
+      c+='<td>'+(s.categoryId?catIcon(s.categoryId)+' '+catName(s.categoryId):'-')+'</td>';
+      c+='<td>'+(s.quantity?s.quantity+(s.unit||''):'-')+'</td>';
+      c+='<td>&#xA5;'+s.amount.toFixed(2)+'</td>';
+      c+='<td>'+tag(s.status)+'</td>';
+      c+='<td>'+(s.time||'')+'</td>';
+      c+='<td>'+(s.status==='pending'?'<button class="btn btn-sm btn-primary" onclick="confirmSettlement('+s.id+')">确认结算</button>':'-')+'</td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+function confirmSettlement(id){
+  var s=STORE.settlements.find(function(s){return s.id===id;});
+  if(s){s.status='paid';showToast('已结算 &#xA5;'+s.amount.toFixed(2));renderSettlement();}
+}
+
+function renderAfterSales(){
+  var c='<div class="page-title">&#x1F4DE; 售后客服管理</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">售后工单</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>订单</th><th>用户</th><th>原因</th><th>状态</th><th>处理方案</th><th>时间</th><th>操作</th></tr></thead><tbody>';
+  if(STORE.afterSales.length===0){
+    c+='<tr><td colspan="7" style="text-align:center;color:#999;padding:40px">暂无售后工单</td></tr>';
+  } else {
+    STORE.afterSales.forEach(function(a){
+      c+='<tr><td>'+(a.orderNo||'')+'</td><td>'+(a.userName||'用户')+'</td><td>'+a.reason+'</td><td>'+tag(a.status)+'</td><td>'+(a.resolution||'-')+'</td><td>'+(a.time||'')+'</td>';
+      c+='<td>'+(a.status==='open'?'<button class="btn btn-sm btn-danger" onclick="resolveAfterSale('+a.id+')">处理</button>':'-')+'</td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+function resolveAfterSale(id){
+  var reason=prompt('请输入处理方案：');
+  if(reason){
+    var a=STORE.afterSales.find(function(a){return a.id===id;});
+    if(a){a.status='resolved';a.resolution=reason;showToast('已处理');renderAfterSales();}
+  }
+}
+
+// ============================================================
+// ===== STATION =====
+// ============================================================
+function renderStationOverview(){
+  var todayRec=STORE.receiveRecords.filter(function(r){return r.time&&r.time.startsWith(today());});
+  var totalWeight=todayRec.reduce(function(s,r){return s+r.quantity;},0);
+  var c='<div class="page-title">&#x1F3E1; 桃花镇中转站概览</div>';
+  c+='<div class="stats-grid">';
+  c+='<div class="stat-card"><div class="stat-label">今日收货笔数</div><div class="stat-value green">'+todayRec.length+'</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">今日收货总量</div><div class="stat-value green">'+totalWeight.toFixed(1)+'</div><div class="stat-sub">斤/只</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">在库批次</div><div class="stat-value blue">'+STORE.batches.filter(function(b){return b.stationId===1&&b.status==='at_station';}).length+'</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">注册农户</div><div class="stat-value">'+STORE.farmers.filter(function(f){return f.stationId===1;}).length+'</div></div>';
+  c+='</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">站点库存</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>品类</th><th>库存</th></tr></thead><tbody>';
+  STORE.categories.forEach(function(cat){
+    var qty=STORE.batches.filter(function(b){return b.stationId===1&&b.categoryId===cat.id&&b.status==='at_station';}).reduce(function(s,b){return s+b.remaining;},0);
+    c+='<tr><td>'+cat.icon+' '+cat.name+'</td><td>'+qty.toFixed(1)+' '+cat.unit+'</td></tr>';
+  });
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function renderFarmerReg(){
+  var myFarmers=STORE.farmers.filter(function(f){return f.stationId===1;});
+  var c='<div class="page-title">&#x1F468;&#x200D;&#x1F33E; 农户建档（支持代办）</div>';
+  c+='<div class="hero-banner" style="margin-bottom:20px;background:linear-gradient(135deg,#237804,#52c41a)">';
+  c+='<p style="opacity:.9">大龄农户可由站点工作人员代为登记，填写信息后一键保存。</p></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">新增农户建档</div><button class="btn btn-primary btn-sm" onclick="openFarmerReg()">+ 新增农户</button></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>编号</th><th>姓名</th><th>电话</th><th>村镇</th><th>地址</th></tr></thead><tbody>';
+  myFarmers.forEach(function(f){c+='<tr><td>'+f.code+'</td><td>'+f.name+'</td><td>'+f.phone+'</td><td>'+f.village+'</td><td>'+f.address+'</td></tr>';});
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function openFarmerReg(){
+  openModal('农户建档（代办）',
+    '<div class="form-grid">'+
+    '<div class="form-group"><label class="form-label">姓名 *</label><input class="form-input" id="farmer-name" placeholder="如：张大爷"></div>'+
+    '<div class="form-group"><label class="form-label">电话</label><input class="form-input" id="farmer-phone" placeholder="手机号码"></div>'+
+    '<div class="form-group"><label class="form-label">村镇</label><input class="form-input" id="farmer-village" placeholder="如：桃花村"></div>'+
+    '<div class="form-group"><label class="form-label">详细地址</label><input class="form-input" id="farmer-addr" placeholder="村组门牌号"></div>'+
+    '</div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="submitFarmerReg()">确认建档</button>'
+  );
+}
+
+function submitFarmerReg(){
+  var name=document.getElementById('farmer-name').value.trim();
+  if(!name){showToast('请填写姓名','error');return;}
+  var id=genId('farmer');
+  STORE.farmers.push({id:id,code:'FN'+String(Date.now()).slice(-8),name:name,
+    phone:document.getElementById('farmer-phone').value,
+    village:document.getElementById('farmer-village').value,
+    address:document.getElementById('farmer-addr').value,stationId:1});
+  closeModal();
+  showToast('农户 '+name+' 建档成功！');
+  renderFarmerReg();
+}
+
+function renderReceive(){
+  var myFarmers=STORE.farmers.filter(function(f){return f.stationId===1;});
+  var myBatches=STORE.batches.filter(function(b){return b.stationId===1;});
+  var c='<div class="page-title">&#x1F4E6; 现场收货登记</div>';
+  c+='<div class="grid-2">';
+  c+='<div class="card"><div class="card-header"><div class="card-title">收货表单</div></div><div class="card-body">';
+  c+='<div class="form-grid">'+
+    '<div class="form-group"><label class="form-label">选择农户 *</label><select class="form-select" id="recv-farmer"><option value="">-- 请选择 --</option>'+
+    myFarmers.map(function(f){return '<option value="'+f.id+'">'+f.name+' ('+f.code+')</option>';}).join('')+'</select></div>'+
+    '<div class="form-group"><label class="form-label">农产品品类 *</label><select class="form-select" id="recv-category"><option value="">-- 请选择 --</option>'+
+    STORE.categories.map(function(cat){return '<option value="'+cat.id+'">'+cat.icon+' '+cat.name+' &#xB7; 收购价 &#xA5;'+cat.purchasePrice+'/'+cat.unit+'</option>';}).join('')+'</select></div>'+
+    '<div class="form-group"><label class="form-label">实际重量 *</label><input type="number" class="form-input" id="recv-qty" placeholder="填写数字" step="0.5" style="width:120px"></div>'+
+    '<div class="form-group"><label class="form-label">品质分级</label><select class="form-select" id="recv-grade"><option value="A">A级&middot;优品</option><option value="B">B级&middot;普品</option></select></div>'+
+    '</div>';
+  c+='<button class="btn btn-primary btn-lg btn-block" onclick="submitReceive()" style="margin-top:8px">确认收货 &middot; 生成批次</button></div></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">最近批次（'+myBatches.length+' 个）</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>批次号</th><th>品类</th><th>农户</th><th>数量</th><th>状态</th><th>溯源码</th></tr></thead><tbody>';
+  if(myBatches.length===0){
+    c+='<tr><td colspan="6" style="text-align:center;color:#999;padding:32px">暂无批次，先收货登记</td></tr>';
+  } else {
+    myBatches.slice(0,8).forEach(function(b){
+      c+='<tr><td>'+b.batchNo+'</td><td>'+catIcon(b.categoryId)+' '+catName(b.categoryId)+'</td>';
+      c+='<td>'+farmerName(b.farmerId)+'</td><td>'+b.quantity+catUnit(b.categoryId)+'</td>';
+      c+='<td>'+tag(b.status)+'</td>';
+      c+='<td><a href="javascript:showTrace(\''+b.traceCode+'\')" style="color:var(--green);font-size:12px">'+b.traceCode.substr(0,10)+'...</a></td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function submitReceive(){
+  var farmerId=parseInt(document.getElementById('recv-farmer').value);
+  var categoryId=parseInt(document.getElementById('recv-category').value);
+  var quantity=parseFloat(document.getElementById('recv-qty').value);
+  var grade=document.getElementById('recv-grade').value;
+  if(!farmerId||!categoryId||!quantity){showToast('请填写完整信息','error');return;}
+  var cat=STORE.categories.find(function(c){return c.id===categoryId;});
+  var batchNo='BT'+String(Date.now()).slice(-8);
+  var traceCode='TR'+Math.random().toString(36).slice(2,10).toUpperCase();
+  var batchId=genId('batch');
+  STORE.batches.push({id:batchId,batchNo:batchNo,stationId:1,categoryId:categoryId,grade:grade,quantity:quantity,remaining:quantity,status:'at_station',traceCode:traceCode,farmerId:farmerId,time:today()+' '+now()});
+  STORE.receiveRecords.push({farmerId:farmerId,categoryId:categoryId,quantity:quantity,grade:grade,time:today()+' '+now()});
+  var amount=quantity*cat.purchasePrice;
+  STORE.settlements.push({id:genId('settlement'),farmerId:farmerId,categoryId:categoryId,quantity:quantity,unit:cat.unit,amount:amount,status:'pending',time:today()+' '+now()});
+  showToast('收货成功！批次 '+batchNo+'\n溯源码 '+traceCode+'\n应结算 &#xA5;'+amount.toFixed(2));
+  document.getElementById('recv-qty').value='';
+  renderReceive();
+}
+
+function renderShip(){
+  var shippable=STORE.batches.filter(function(b){return b.stationId===1&&b.status==='at_station'&&b.remaining>0;});
+  var c='<div class="page-title">&#x1F69A; 汇总发货申请</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">选择批次发货至总仓</div><button class="btn btn-primary" onclick="submitShipment()">提交至总仓</button></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th style="width:40px">选择</th><th>批次号</th><th>品类</th><th>农户</th><th>可发库存</th><th>发货数量</th></tr></thead><tbody>';
+  if(shippable.length===0){
+    c+='<tr><td colspan="6" style="text-align:center;color:#999;padding:32px">无可发货批次，先收货</td></tr>';
+  } else {
+    shippable.forEach(function(b){
+      c+='<tr><td><input type="checkbox" id="ship-'+b.id+'" style="width:16px;height:16px;cursor:pointer"></td>';
+      c+='<td>'+b.batchNo+'</td><td>'+catIcon(b.categoryId)+' '+catName(b.categoryId)+'</td>';
+      c+='<td>'+farmerName(b.farmerId)+'</td><td>'+b.remaining+catUnit(b.categoryId)+'</td>';
+      c+='<td><input type="number" class="form-input-number" id="sqty-'+b.id+'" value="'+b.remaining+'" max="'+b.remaining+'" step="0.5" style="width:90px"></td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">发货历史</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>申请单号</th><th>申请时间</th><th>状态</th></tr></thead><tbody>';
+  if(STORE.shipments.length===0){
+    c+='<tr><td colspan="3" style="text-align:center;color:#999;padding:32px">暂无发货记录</td></tr>';
+  } else {
+    STORE.shipments.forEach(function(s){c+='<tr><td>'+s.no+'</td><td>'+s.time+'</td><td>'+tag(s.status)+'</td></tr>';});
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function submitShipment(){
+  var shippable=STORE.batches.filter(function(b){return b.stationId===1&&b.status==='at_station'&&b.remaining>0;});
+  var selected=shippable.filter(function(b){return document.getElementById('ship-'+b.id).checked;});
+  if(selected.length===0){showToast('请至少选择一个批次','error');return;}
+  var hasQty=false;
+  selected.forEach(function(b){
+    var qty=parseFloat(document.getElementById('sqty-'+b.id).value)||0;
+    if(qty>0){hasQty=true;b.remaining-=qty;b.status='in_transit';}
+  });
+  if(!hasQty){showToast('请填写发货数量','error');return;}
+  var no='SR'+Math.random().toString(36).slice(2,8).toUpperCase();
+  STORE.shipments.push({id:genId('shipment'),no:no,status:'pending',time:today()+' '+now(),items:selected.map(function(b){return Object.assign({},b);})});
+  showToast('发货申请已提交！单号 '+no+'\n等待总仓入库');
+  renderShip();
+}
+
+// ============================================================
+// ===== WAREHOUSE =====
+// ============================================================
+function renderWarehouseOverview(){
+  var c='<div class="page-title">&#x1F3ED; 仓储物流概览</div>';
+  c+='<div class="stats-grid">';
+  c+='<div class="stat-card"><div class="stat-label">待入库申请</div><div class="stat-value blue">'+STORE.shipments.filter(function(s){return s.status==='pending';}).length+'</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">总仓库存</div><div class="stat-value green">'+STORE.warehouseInventory.reduce(function(s,i){return s+i.quantity;},0).toFixed(1)+'</div><div class="stat-sub">斤/只</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">在途配送</div><div class="stat-value amber">'+STORE.deliveries.filter(function(d){return d.status==='in_transit';}).length+'</div></div>';
+  var qcTotal=STORE.batches.filter(function(b){return b.qcStatus;}).length;
+  var qcPass=STORE.batches.filter(function(b){return b.qcStatus==='pass';}).length;
+  c+='<div class="stat-card"><div class="stat-label">质检合格率</div><div class="stat-value green">'+(qcTotal>0?(qcPass/qcTotal*100).toFixed(0):100)+'%</div></div>';
+  c+='</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">总仓库存明细</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>批次</th><th>品类</th><th>农户</th><th>数量</th><th>质检</th><th>溯源码</th></tr></thead><tbody>';
+  if(STORE.warehouseInventory.length===0){
+    c+='<tr><td colspan="6" style="text-align:center;color:#999;padding:32px">暂无库存，等待站点发货</td></tr>';
+  } else {
+    STORE.warehouseInventory.forEach(function(inv){
+      var b=STORE.batches.find(function(bb){return bb.id===inv.batchId;});
+      c+='<tr><td>'+(b?b.batchNo:inv.batchId)+'</td>';
+      c+='<td>'+catIcon(inv.categoryId)+' '+catName(inv.categoryId)+'</td>';
+      c+='<td>'+(b?farmerName(b.farmerId):'-')+'</td>';
+      c+='<td>'+inv.quantity.toFixed(1)+catUnit(inv.categoryId)+'</td>';
+      c+='<td>'+(b?tag(b.qcStatus||'pending'):tag('pending'))+'</td>';
+      c+='<td>'+(b?'<a href="javascript:showTrace(\''+b.traceCode+'\')" style="color:var(--blue);font-size:12px">'+b.traceCode.substr(0,10)+'...</a>':'-')+'</td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function renderInbound(){
+  var pending=STORE.shipments.filter(function(s){return s.status==='pending';});
+  var received=STORE.shipments.filter(function(s){return s.status==='received';});
+  var c='<div class="page-title">&#x1F4E5; 站点到货入库</div>';
+  c+='<div class="grid-2">';
+  c+='<div class="card"><div class="card-header"><div class="card-title">待入库申请（'+pending.length+' 单）</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>单号</th><th>来源</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+  if(pending.length===0){
+    c+='<tr><td colspan="4" style="text-align:center;color:#999;padding:32px">暂无待入库申请</td></tr>';
+  } else {
+    pending.forEach(function(s){
+      c+='<tr><td>'+s.no+'</td><td>桃花镇中转站</td><td>'+tag(s.status)+'</td>';
+      c+='<td><button class="btn btn-sm btn-primary" onclick="warehouseReceive('+s.id+')">确认入库</button></td></tr>';
+      if(s.items&&s.items.length){
+        c+='<tr style="background:#f9f9f9"><td colspan="4" style="padding:8px 16px;font-size:12px;color:#666">';
+        c+=s.items.map(function(i){return catIcon(i.categoryId)+' '+catName(i.categoryId)+' '+i.quantity+catUnit(i.categoryId);}).join(' &middot; ');
+        c+='</td></tr>';
+      }
+    });
+  }
+  c+='</tbody></table></div></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">已入库记录</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>单号</th><th>入库时间</th><th>状态</th></tr></thead><tbody>';
+  if(received.length===0){
+    c+='<tr><td colspan="3" style="text-align:center;color:#999;padding:32px">暂无记录</td></tr>';
+  } else {
+    received.forEach(function(s){c+='<tr><td>'+s.no+'</td><td>'+(s.receiveTime||'-')+'</td><td>'+tag(s.status)+'</td></tr>';});
+  }
+  c+='</tbody></table></div></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function warehouseReceive(id){
+  var s=STORE.shipments.find(function(ss){return ss.id===id;});
+  if(!s)return;
+  s.status='received';
+  s.receiveTime=today()+' '+now();
+  (s.items||[]).forEach(function(item){
+    STORE.warehouseInventory.push({id:genId('inv'),batchId:item.id,categoryId:item.categoryId,quantity:item.quantity});
+    var b=STORE.batches.find(function(bb){return bb.id===item.id;});
+    if(b){b.status='in_warehouse';if(!b.qcStatus)b.qcStatus='pending';}
+  });
+  showToast('入库成功，商品已入总仓！');
+  renderInbound();
+}
+
+function renderQC(){
+  var c='<div class="page-title">&#x1F9E0; 批次质检 &amp; 溯源</div>';
+  var passCount=STORE.batches.filter(function(b){return b.qcStatus==='pass';}).length;
+  var totalQC=STORE.batches.filter(function(b){return b.qcStatus;}).length;
+  c+='<div class="card"><div class="card-header"><div class="card-title">待质检批次</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>批次</th><th>品类</th><th>农户</th><th>数量</th><th>溯源码</th><th>当前状态</th><th>质检操作</th></tr></thead><tbody>';
+  var hasRows=false;
+  STORE.warehouseInventory.forEach(function(inv){
+    var b=STORE.batches.find(function(bb){return bb.id===inv.batchId;});
+    if(!b||b.qcStatus==='pass'||b.qcStatus==='fail')return;
+    hasRows=true;
+    c+='<tr><td>'+b.batchNo+'</td>';
+    c+='<td>'+catIcon(inv.categoryId)+' '+catName(inv.categoryId)+'</td>';
+    c+='<td>'+farmerName(b.farmerId)+'</td>';
+    c+='<td>'+inv.quantity.toFixed(1)+catUnit(inv.categoryId)+'</td>';
+    c+='<td><a href="javascript:showTrace(\''+b.traceCode+'\')" style="color:var(--blue);font-size:12px">'+b.traceCode.substr(0,10)+'...</a></td>';
+    c+='<td>'+tag(b.qcStatus||'pending')+'</td>';
+    c+='<td><button class="btn btn-sm" style="background:#e6f4ea;color:var(--green);margin-right:4px" onclick="qcPass('+b.id+','+inv.id+')">&#x2713; 合格</button>';
+    c+='<button class="btn btn-sm" style="background:#fff1f0;color:var(--red)" onclick="qcFail('+b.id+','+inv.id+')">&#x2717; 不合格</button></td></tr>';
+  });
+  if(!hasRows)c+='<tr><td colspan="7" style="text-align:center;color:#999;padding:32px">暂无待检批次，先入库</td></tr>';
+  c+='</tbody></table></div></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">质检历史</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>批次</th><th>品类</th><th>质检结果</th><th>说明</th><th>时间</th></tr></thead><tbody>';
+  var histRows=STORE.batches.filter(function(b){return b.qcStatus==='pass'||b.qcStatus==='fail';});
+  if(histRows.length===0){
+    c+='<tr><td colspan="5" style="text-align:center;color:#999;padding:32px">暂无质检记录</td></tr>';
+  } else {
+    histRows.forEach(function(b){c+='<tr><td>'+b.batchNo+'</td><td>'+catIcon(b.categoryId)+' '+catName(b.categoryId)+'</td><td>'+tag(b.qcStatus)+'</td><td>'+(b.qcResult||'-')+'</td><td>'+(b.qcTime||'-')+'</td></tr>';});
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function qcPass(batchId,invId){
+  var b=STORE.batches.find(function(bb){return bb.id===batchId;});
+  if(b){b.qcStatus='pass';b.qcResult='农残未检出，新鲜度优';b.qcTime=today()+' '+now();}
+  showToast('质检合格！批次可配送至门店');
+  renderQC();
+}
+function qcFail(batchId,invId){
+  var b=STORE.batches.find(function(bb){return bb.id===batchId;});
+  if(b){b.qcStatus='fail';b.qcResult='不合格品，已隔离处理';b.qcTime=today()+' '+now();}
+  var inv=STORE.warehouseInventory.find(function(ii){return ii.id===invId;});
+  if(inv)inv.quantity=0;
+  showToast('已标记不合格，已从库存移除','error');
+  renderQC();
+}
+
+function renderDelivery(){
+  var eligible=STORE.warehouseInventory.filter(function(i){
+    var b=STORE.batches.find(function(bb){return bb.id===i.batchId;});
+    return b&&b.qcStatus==='pass'&&i.quantity>0;
+  });
+  var c='<div class="page-title">&#x1F69B; 门店配送调度</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">生成配送单</div>';
+  c+='<div style="display:flex;gap:10px;align-items:center">';
+  c+='<select class="form-select" id="dl-store" style="width:180px">';
+  c+='<option value="1">成都春熙路社区店</option><option value="2">成都天府新区店</option></select>';
+  c+='<button class="btn btn-primary" onclick="submitDelivery()">生成配送单</button></div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th style="width:40px">选择</th><th>批次</th><th>品类</th><th>库存</th><th>配送数量</th></tr></thead><tbody>';
+  if(eligible.length===0){
+    c+='<tr><td colspan="5" style="text-align:center;color:#999;padding:32px">无合格可配送商品（先质检）</td></tr>';
+  } else {
+    eligible.forEach(function(inv){
+      var b=STORE.batches.find(function(bb){return bb.id===inv.batchId;});
+      c+='<tr><td><input type="checkbox" id="dl-'+inv.id+'" style="width:16px;height:16px;cursor:pointer"></td>';
+      c+='<td>'+b.batchNo+'</td><td>'+catIcon(inv.categoryId)+' '+catName(inv.categoryId)+'</td>';
+      c+='<td>'+inv.quantity.toFixed(1)+catUnit(inv.categoryId)+'</td>';
+      c+='<td><input type="number" class="form-input-number" id="dlqty-'+inv.id+'" value="'+inv.quantity.toFixed(1)+'" max="'+inv.quantity+'" step="0.5" style="width:90px"></td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">配送记录</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>配送单号</th><th>门店</th><th>状态</th><th>时间</th></tr></thead><tbody>';
+  if(STORE.deliveries.length===0){
+    c+='<tr><td colspan="4" style="text-align:center;color:#999;padding:32px">暂无配送记录</td></tr>';
+  } else {
+    STORE.deliveries.forEach(function(d){c+='<tr><td>'+d.no+'</td><td>'+storeName(d.storeId)+'</td><td>'+tag(d.status)+'</td><td>'+d.time+'</td></tr>';});
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function submitDelivery(){
+  var storeId=parseInt(document.getElementById('dl-store').value);
+  var selected=STORE.warehouseInventory.filter(function(i){
+    var b=STORE.batches.find(function(bb){return bb.id===i.batchId;});
+    return b&&b.qcStatus==='pass'&&i.quantity>0&&document.getElementById('dl-'+i.id).checked;
+  });
+  if(!selected.length){showToast('请选择要配送的商品','error');return;}
+  selected.forEach(function(inv){
+    var qty=parseFloat(document.getElementById('dlqty-'+inv.id).value)||0;
+    if(qty<=0)return;
+    inv.quantity-=qty;
+    STORE.storeInventory.push({id:genId('sinv'),batchId:inv.batchId,categoryId:inv.categoryId,quantity:qty,storeId:storeId,price:catPrice(inv.categoryId)});
+  });
+  var no='DL'+Math.random().toString(36).slice(2,8).toUpperCase();
+  STORE.deliveries.push({id:genId('delivery'),no:no,storeId:storeId,status:'in_transit',time:today()+' '+now()});
+  showToast('配送单 '+no+' 已生成\n等待门店入库');
+  renderDelivery();
+}
+
+// ============================================================
+// ===== STORE =====
+// ============================================================
+function renderStoreOverview(){
+  var pendingOrders=STORE.consumerOrders.filter(function(o){return o.storeId===1&&o.status==='pending_pickup';});
+  var todayOrders=STORE.consumerOrders.filter(function(o){return o.storeId===1&&o.status==='completed';});
+  var todayAmt=todayOrders.reduce(function(s,o){return s+o.totalAmount;},0);
+  var c='<div class="page-title">&#x1F3EA; 成都春熙路社区店概览</div>';
+  c+='<div class="stats-grid">';
+  c+='<div class="stat-card"><div class="stat-label">待核销订单</div><div class="stat-value amber">'+pendingOrders.length+'</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">今日成交</div><div class="stat-value green">'+todayOrders.length+'</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">今日营收</div><div class="stat-value amber">&#xA5;'+todayAmt.toFixed(2)+'</div></div>';
+  c+='<div class="stat-card"><div class="stat-label">门店库存</div><div class="stat-value blue">'+STORE.storeInventory.filter(function(i){return i.storeId===1;}).reduce(function(s,i){return s+i.quantity;},0).toFixed(1)+'</div></div>';
+  c+='</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">门店库存</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>品类</th><th>库存</th><th>零售价</th></tr></thead><tbody>';
+  STORE.categories.forEach(function(cat){
+    var qty=STORE.storeInventory.filter(function(i){return i.storeId===1&&i.categoryId===cat.id;}).reduce(function(s,i){return s+i.quantity;},0);
+    var price=STORE.storeInventory.find(function(i){return i.storeId===1&&i.categoryId===cat.id;});
+    c+='<tr><td>'+cat.icon+' '+cat.name+'</td><td>'+qty.toFixed(1)+' '+cat.unit+'</td><td>'+(price?'&#xA5;'+price.price+'/'+cat.unit:'-')+'</td></tr>';
+  });
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function renderStoreInbound(){
+  var pending=STORE.deliveries.filter(function(d){return d.storeId===1&&d.status==='in_transit';});
+  var c='<div class="page-title">&#x1F4E5; 门店收货入库</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">总仓配送到店（'+pending.length+' 单待入库）</div></div>';
+  c+='<div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>配送单号</th><th>来源</th><th>状态</th><th>时间</th><th>操作</th></tr></thead><tbody>';
+  if(pending.length===0){
+    c+='<tr><td colspan="5" style="text-align:center;color:#999;padding:32px">暂无待入库配送单</td></tr>';
+  } else {
+    pending.forEach(function(d){c+='<tr><td>'+d.no+'</td><td>县域总仓冷链中心</td><td>'+tag(d.status)+'</td><td>'+d.time+'</td><td><button class="btn btn-sm btn-primary" onclick="storeReceive('+d.id+')">确认入库</button></td></tr>';});
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function storeReceive(id){
+  var d=STORE.deliveries.find(function(dd){return dd.id===id;});
+  if(d){d.status='in_warehouse';showToast('入库成功，商品已上架！');}
+  renderStoreInbound();
+}
+
+function renderInventory(){
+  var myInv=STORE.storeInventory.filter(function(i){return i.storeId===1&&i.quantity>0;});
+  var c='<div class="page-title">&#x1F6D2; 库存管理与线下售卖</div>';
+  c+='<div class="card"><div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>品类</th><th>批次</th><th>农户</th><th>库存</th><th>零售价</th><th>溯源</th><th>线下售卖</th></tr></thead><tbody>';
+  if(myInv.length===0){
+    c+='<tr><td colspan="7" style="text-align:center;color:#999;padding:32px">暂无库存，等待总仓配送</td></tr>';
+  } else {
+    myInv.forEach(function(inv){
+      var b=STORE.batches.find(function(bb){return bb.id===inv.batchId;});
+      c+='<tr><td>'+catIcon(inv.categoryId)+' '+catName(inv.categoryId)+'</td>';
+      c+='<td>'+(b?b.batchNo:'-')+'</td><td>'+(b?farmerName(b.farmerId):'-')+'</td>';
+      c+='<td>'+inv.quantity.toFixed(1)+catUnit(inv.categoryId)+'</td><td>&#xA5;'+inv.price+'/'+catUnit(inv.categoryId)+'</td>';
+      c+='<td>'+(b?'<a href="javascript:showTrace(\''+b.traceCode+'\')" style="color:var(--blue);font-size:12px">查看溯源</a>':'-')+'</td>';
+      c+='<td><div style="display:flex;gap:6px;align-items:center">';
+      c+='<input type="number" class="form-input-number" id="sell-qty-'+inv.id+'" value="1" min="0.5" max="'+inv.quantity+'" step="0.5" style="width:70px">';
+      c+='<button class="btn btn-sm btn-primary" onclick="offlineSell('+inv.id+')">售出</button></div></td></tr>';
+    });
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function offlineSell(invId){
+  var inv=STORE.storeInventory.find(function(i){return i.id===invId;});
+  if(!inv)return;
+  var qty=parseFloat(document.getElementById('sell-qty-'+invId).value)||1;
+  if(qty>inv.quantity){showToast('库存不足','error');return;}
+  inv.quantity-=qty;
+  var amt=qty*inv.price;
+  showToast('线下售出 &#xA5;'+amt.toFixed(2));
+  renderInventory();
+}
+
+function renderStoreOrders(){
+  var myOrders=STORE.consumerOrders.filter(function(o){return o.storeId===1;});
+  var c='<div class="page-title">&#x1F4CB; 线上订单 &middot; 到店核销</div>';
+  c+='<div class="card"><div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>订单号</th><th>用户</th><th>金额</th><th>取货码</th><th>状态</th><th>时间</th><th>操作</th></tr></thead><tbody>';
+  if(myOrders.length===0){
+    c+='<tr><td colspan="7" style="text-align:center;color:#999;padding:32px">暂无订单</td></tr>';
+  } else {
+    myOrders.forEach(function(o){
+      c+='<tr><td>'+o.no+'</td><td>'+(o.userName||'用户')+'</td><td>&#xA5;'+o.totalAmount.toFixed(2)+'</td>';
+      c+='<td style="font-size:18px;font-weight:700;color:var(--green-dark);letter-spacing:3px">'+o.pickupCode+'</td>';
+      c+='<td>'+tag(o.status)+'</td><td>'+o.time+'</td>';
+      c+='<td>'+(o.status==='pending_pickup'?'<button class="btn btn-sm btn-primary" onclick="verifyOrder('+o.id+')">核销</button>':'-')+'</td></tr>';
+      if(o.items&&o.items.length){
+        c+='<tr style="background:#f9f9f9"><td colspan="7" style="padding:6px 16px;font-size:12px;color:#666">';
+        c+=o.items.map(function(i){return catIcon(i.categoryId)+' '+i.name+' &times; '+i.quantity+i.unit;}).join(' &middot; ');
+        c+='</td></tr>';
+      }
+    });
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function verifyOrder(orderId){
+  var code=prompt('请输入用户提供的取货码：');
+  var order=STORE.consumerOrders.find(function(o){return o.id===orderId;});
+  if(!order)return;
+  if(code&&code.trim().toUpperCase()===order.pickupCode){
+    order.status='completed';
+    showToast('核销成功！订单已完成');
+    renderStoreOrders();
+  } else {
+    showToast('取货码错误，请重试','error');
+  }
+}
+
+// ============================================================
+// ===== CONSUMER =====
+// ============================================================
+function renderShop(){
+  var products=STORE.storeInventory.filter(function(i){return i.storeId===1&&i.quantity>0;}).map(function(inv){
+    var b=STORE.batches.find(function(bb){return bb.id===inv.batchId;});
+    var cat=STORE.categories.find(function(cc){return cc.id===inv.categoryId;});
+    var farmer=b?STORE.farmers.find(function(f){return f.id===b.farmerId;}):null;
+    return Object.assign({},inv,{batch:b,category:cat,farmer:farmer});
+  });
+  var cartTotal=CART.reduce(function(s,item){return s+item.qty*item.price;},0);
+  var c='<div class="hero-banner"><h2>&#x1F33F; 原生态农家生鲜 &middot; 城乡直供</h2><p>每一件商品均可溯源至农户 &middot; 新鲜直达城市社区</p></div>';
+  if(CART.length>0){
+    c+='<div class="cart-bar"><span class="cart-count">&#x1F6D2; 购物车 '+CART.length+' 件商品</span>';
+    c+='<div style="display:flex;gap:10px;align-items:center">';
+    c+='<span style="font-size:16px;font-weight:700;color:var(--red)">&#xA5;'+cartTotal.toFixed(2)+'</span>';
+    c+='<button class="btn btn-primary" onclick="openCheckout()">去下单</button></div></div>';
+  }
+  c+='<div class="product-grid">';
+  if(products.length===0){
+    c+='<div class="empty-state"><span class="emoji">&#x1F4E6;</span><p>暂无上架商品<br><span style="font-size:12px">请先完成供应链：中转站收货 &rarr; 总仓配送 &rarr; 门店入库</span></p></div>';
+  } else {
+    products.forEach(function(p){
+      c+='<div class="product-card">';
+      c+='<div class="product-img" style="background:'+(p.category?p.category.color:'#eee')+'">'+(p.category?p.category.icon:'') +'</div>';
+      c+='<div class="product-info">';
+      c+='<div class="product-name">'+(p.category?p.category.name:'') +'</div>';
+      c+='<div class="product-meta">'+(p.farmer?p.farmer.name+' &middot; '+p.farmer.village:'农家直供')+' &middot; '+storeName(1)+'</div>';
+      if(p.batch)c+='<div style="margin-bottom:6px"><a href="javascript:showTrace(\''+p.batch.traceCode+'\')" style="color:var(--blue);font-size:12px">&#x1F50D; 溯源查询</a></div>';
+      c+='<div class="product-price">&#xA5;'+p.price+'<span>/'+(p.category?p.category.unit:'') +'</span></div>';
+      c+='<div class="product-stock">库存 '+p.quantity.toFixed(1)+(p.category?p.category.unit:'') +'</div></div>';
+      c+='<div class="product-actions">';
+      c+='<input type="number" class="product-qty" id="cart-qty-'+p.id+'" value="1" min="0.5" max="'+p.quantity+'" step="0.5">';
+      c+='<button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart('+p.id+')">加入购物车</button></div>';
+      c+='</div>';
+    });
+  }
+  c+='</div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function addToCart(invId){
+  var inv=STORE.storeInventory.find(function(i){return i.id===invId;});
+  if(!inv||inv.quantity<=0){showToast('商品已售罄','error');return;}
+  var qty=parseFloat(document.getElementById('cart-qty-'+invId).value)||1;
+  if(qty>inv.quantity){showToast('库存不足','error');return;}
+  var existing=CART.find(function(c){return c.invId===invId;});
+  if(existing){existing.qty+=qty;}else{CART.push({invId:invId,qty:qty,price:inv.price,name:catName(inv.categoryId),unit:catUnit(inv.categoryId)});}
+  showToast('已加入购物车：'+catName(inv.categoryId)+' &times; '+qty+catUnit(inv.categoryId));
+  renderShop();
+}
+
+function openCheckout(){
+  var total=CART.reduce(function(s,item){return s+item.qty*item.price;},0);
+  var body='<p style="margin-bottom:16px;font-size:13px;color:#666">自提门店：成都春熙路社区店</p>';
+  CART.forEach(function(item){body+='<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:13px"><span>'+item.name+' &times; '+item.qty+item.unit+'</span><strong>&#xA5;'+(item.qty*item.price).toFixed(2)+'</strong></div>';});
+  body+='<div style="display:flex;justify-content:space-between;padding:14px 0;font-size:16px;font-weight:700;border-top:2px solid #e6f4ea"><span>合计</span><span style="color:var(--red)">&#xA5;'+total.toFixed(2)+'</span></div>';
+  openModal('确认订单',body,'<button class="btn btn-secondary" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="submitOrder()">确认下单</button>');
+}
+
+function submitOrder(){
+  closeModal();
+  var total=CART.reduce(function(s,item){return s+item.qty*item.price;},0);
+  var orderId=genId('order');
+  var pickupCode=Math.random().toString(36).slice(2,8).toUpperCase();
+  var orderNo='CO'+Math.random().toString(36).slice(2,8).toUpperCase();
+  CART.forEach(function(item){
+    var inv=STORE.storeInventory.find(function(i){return i.id===item.invId;});
+    if(inv)inv.quantity-=item.qty;
+  });
+  STORE.consumerOrders.push({id:orderId,no:orderNo,storeId:1,userName:'成都用户王女士',totalAmount:total,status:'pending_pickup',pickupCode:pickupCode,time:today()+' '+now(),items:CART.map(function(i){return Object.assign({},i);})});
+  var savedCart=CART.slice();CART=[];
+  var body='<div class="pickup-code-box"><div style="font-size:13px;color:var(--muted);margin-bottom:8px">请到店出示取货码</div>';
+  body+='<div class="pickup-code">'+pickupCode+'</div>';
+  body+='<div style="margin-top:8px;font-size:13px;color:var(--muted)">订单号：'+orderNo+'</div></div>';
+  body+='<div style="margin-top:16px;font-size:13px;color:var(--muted);text-align:center">门店地址：锦江区春熙路88号<br>联系电话：028-88888888</div>';
+  openModal('下单成功！',body,'<button class="btn btn-primary btn-block" onclick="closeModal()">好的</button>');
+}
+
+function renderMyOrders(){
+  var c='<div class="page-title">&#x1F4E6; 我的订单</div>';
+  c+='<div class="card"><div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>订单号</th><th>门店</th><th>金额</th><th>取货码</th><th>状态</th><th>时间</th><th>操作</th></tr></thead><tbody>';
+  if(STORE.consumerOrders.length===0){
+    c+='<tr><td colspan="7" style="text-align:center;color:#999;padding:40px">暂无订单，去选购吧！</td></tr>';
+  } else {
+    STORE.consumerOrders.forEach(function(o){
+      c+='<tr><td>'+o.no+'</td><td>'+storeName(o.storeId)+'</td><td>&#xA5;'+o.totalAmount.toFixed(2)+'</td>';
+      c+='<td style="font-weight:700;color:var(--green-dark)">'+o.pickupCode+'</td>';
+      c+='<td>'+tag(o.status)+'</td><td>'+o.time+'</td>';
+      c+='<td><button class="btn btn-sm btn-secondary" onclick="applyAfterSale('+o.id+')">申请售后</button></td></tr>';
+      if(o.items&&o.items.length){
+        c+='<tr style="background:#f9f9f9"><td colspan="7" style="padding:6px 16px;font-size:12px;color:#666">';
+        c+=o.items.map(function(i){return i.name+' &times; '+i.qty+i.unit;}).join(' &middot; ');
+        c+='</td></tr>';
+      }
+    });
+  }
+  c+='</tbody></table></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function applyAfterSale(orderId){
+  var reason=prompt('请描述遇到的问题：');
+  if(reason){
+    var order=STORE.consumerOrders.find(function(o){return o.id===orderId;});
+    STORE.afterSales.push({id:genId('as'),orderId:orderId,orderNo:order?order.no:'',userName:'成都用户王女士',reason:reason,status:'open',time:today()+' '+now()});
+    showToast('售后申请已提交');
+  }
+}
+
+function renderTraceSearch(){
+  var codes=[...new Set(STORE.batches.map(function(b){return b.traceCode;}))];
+  var c='<div class="page-title">&#x1F50D; 农产品溯源查询</div>';
+  c+='<div class="card"><div class="card-header"><div class="card-title">输入溯源码查询全流程</div></div>';
+  c+='<div class="card-body">';
+  c+='<div style="display:flex;gap:10px;margin-bottom:20px">';
+  c+='<input class="form-input" id="trace-input" placeholder="输入溯源码，如 TRDEMO001" style="flex:1">';
+  c+='<button class="btn btn-primary" onclick="doTraceSearch()">查询</button></div>';
+  c+='<div style="margin-bottom:16px;font-size:13px;color:var(--muted)">已有溯源码（可测试）：</div>';
+  c+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+  if(codes.length===0){
+    c+='<span style="color:#999;font-size:13px">暂无溯源码，请先完成收货流程</span>';
+  } else {
+    codes.forEach(function(c){c+='<button class="btn btn-sm btn-secondary" onclick="showTrace(\''+c+'\')" style="font-size:12px">'+c.substr(0,12)+'...</button>';});
+  }
+  c+='<button class="btn btn-sm btn-secondary" onclick="showTrace(\'TRDEMO001\')" style="font-size:12px">TRDEMO001（示例）</button>';
+  c+='</div></div></div>';
+  document.getElementById('app-content').innerHTML=c;
+}
+
+function doTraceSearch(){
+  var code=document.getElementById('trace-input').value.trim();
+  if(!code){showToast('请输入溯源码','error');return;}
+  showTrace(code);
+}
+
+function showTrace(traceCode){
+  var b=STORE.batches.find(function(bb){return bb.traceCode===traceCode;});
+  if(!b){
+    // Demo fallback
+    var f0=STORE.farmers[0]||{};
+    var cat0=STORE.categories[0]||{};
+    var body='<div style="background:linear-gradient(135deg,#0d3a16,#1a5f2a);color:#fff;border-radius:12px;padding:28px;text-align:center;margin-bottom:20px">';
+    body+='<div style="font-size:14px;opacity:.9;margin-bottom:8px">溯源码：'+traceCode+'</div>';
+    body+='<div style="font-size:24px;font-weight:700">'+(cat0.icon||'')+' '+(cat0.name||'农产品')+'</div>';
+    body+='<div style="margin-top:12px;font-size:13px;opacity:.9">'+(f0.village||'乡村')+' &middot; 成都春熙路社区店</div></div>';
+    body+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;font-size:13px">';
+    body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">批次号</div><div style="font-weight:600">'+traceCode+'</div></div>';
+    body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">品质等级</div><div style="font-weight:600"><span class="tag tag-green">A级&middot;优品</span></div></div>';
+    body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">农户</div><div style="font-weight:600">'+(f0.name||'农户')+'</div></div>';
+    body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">产地</div><div style="font-weight:600">'+(f0.village||'-')+'</div></div>';
+    body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">质检</div><div style="font-weight:600"><span class="tag tag-green">合格</span></div></div>';
+    body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">当前状态</div><div style="font-weight:600"><span class="tag tag-green">门店在售</span></div></div>';
+    body+='</div>';
+    body+='<div class="timeline">';
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">农户产出</div><div class="timeline-detail">'+(f0.name||'农户')+' &middot; '+(f0.village||'')+'</div><div class="timeline-time">'+today()+'</div></div></div>';
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">中转站收货</div><div class="timeline-detail">桃花镇中转站 &middot; <span class="tag tag-green">A级&middot;优品</span></div><div class="timeline-time">'+today()+'</div></div></div>';
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">质检完成</div><div class="timeline-detail"><span class="tag tag-green">合格</span> &middot; 农残未检出，新鲜度优 &middot; 总仓管理员</div><div class="timeline-time">'+today()+'</div></div></div>';
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">总仓入库</div><div class="timeline-detail">县域总仓冷链中心</div><div class="timeline-time">'+today()+'</div></div></div>';
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">门店上架</div><div class="timeline-detail">成都春熙路社区店</div><div class="timeline-time">'+today()+'</div></div></div>';
+    body+='</div>';
+    openModal('&#x1F50D; 农产品溯源',body,'<button class="btn btn-primary btn-block" onclick="closeModal()">关闭</button>');
+    return;
+  }
+  var cat=STORE.categories.find(function(c){return c.id===b.categoryId;});
+  var farmer=STORE.farmers.find(function(f){return f.id===b.farmerId;});
+  var body='<div style="background:linear-gradient(135deg,#0d3a16,#1a5f2a);color:#fff;border-radius:12px;padding:28px;text-align:center;margin-bottom:20px">';
+  body+='<div style="font-size:14px;opacity:.9;margin-bottom:8px">溯源码：'+b.traceCode+'</div>';
+  body+='<div style="font-size:24px;font-weight:700">'+(cat?cat.icon+' '+cat.name:'') +'</div>';
+  body+='<div style="margin-top:12px;font-size:13px;opacity:.9">'+(farmer?farmer.village:'') +' &middot; 门店在售</div></div>';
+  body+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;font-size:13px">';
+  body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">批次号</div><div style="font-weight:600">'+b.batchNo+'</div></div>';
+  body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">品质等级</div><div style="font-weight:600">'+tag(b.grade)+'</div></div>';
+  body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">农户</div><div style="font-weight:600">'+(farmer?farmer.name:'-') +'</div></div>';
+  body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">产地</div><div style="font-weight:600">'+(farmer?farmer.village:'-') +'</div></div>';
+  body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">质检</div><div style="font-weight:600">'+tag(b.qcStatus||'pending')+'</div></div>';
+  body+='<div style="background:#f9f9f9;padding:12px;border-radius:8px"><div style="color:#999;margin-bottom:4px">当前状态</div><div style="font-weight:600">'+tag(b.status)+'</div></div>';
+  body+='</div>';
+  body+='<div class="timeline">';
+  body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">农户产出</div><div class="timeline-detail">'+(farmer?farmer.name+' · '+farmer.village:'农户') +'</div><div class="timeline-time">'+(b.time||'') +'</div></div></div>';
+  body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">中转站收货</div><div class="timeline-detail">桃花镇中转站 &middot; '+tag(b.grade)+'</div><div class="timeline-time">'+(b.time||'') +'</div></div></div>';
+  if(b.qcStatus){
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">质检完成</div><div class="timeline-detail">'+tag(b.qcStatus)+' · '+(b.qcResult||'') +'</div><div class="timeline-time">'+(b.qcTime||'') +'</div></div></div>';
+  }
+  if(b.status!=='at_station'){
+    body+='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-title">总仓入库</div><div class="timeline-detail">县域总仓冷链中心</div><div class="timeline-time">'+today()+'</div></div></div>';
+  }
+  body+='</div>';
+  openModal('&#x1F50D; 农产品溯源',body,'<button class="btn btn-primary btn-block" onclick="closeModal()">关闭</button>');
+}
+</script>
+</body>
+</html>
+
