@@ -75,7 +75,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;backgr
 @media (max-width:900px){.grid-2{grid-template-columns:1fr}}
 @media (max-width:768px){
 .app-header{position:fixed;top:0;left:0;right:0}
-.hamburger{display:flex;align-items:center;justify-content:center}
+.hamburger{display:flex!important}
 .app-nav,.app-role-tag,.logout-btn{display:none!important}
 .app-content{padding:16px;padding-top:72px}
 .page-title{font-size:18px;margin-bottom:16px}
@@ -140,6 +140,12 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;backgr
 .pickup-code{font-size:36px;font-weight:700;color:var(--green-dark);letter-spacing:6px;font-family:monospace}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .screen.active{animation:fadeIn .3s ease}
+.mobile-nav{position:fixed;top:58px;left:0;right:0;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:99;display:none;flex-direction:column;padding:8px}
+.mobile-nav.show{display:flex}
+.mobile-nav-btn{padding:12px 20px;border:none;background:transparent;text-align:left;font-size:14px;color:var(--text);cursor:pointer;font-family:inherit;border-radius:8px}
+.mobile-nav-btn:hover,.mobile-nav-btn.active{background:#e6f4ea;color:var(--green-dark)}
+.back-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 24px;border-radius:24px;border:none;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(56,158,13,.3);z-index:90;font-family:inherit}
+.back-btn:hover{background:#2d8a45}
 </style>
 </head>
 <body>
@@ -197,7 +203,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;backgr
 <!-- APP SHELL -->
 <div id="app-shell" style="display:none">
   <header class="app-header">
-    <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+    <button class="hamburger" onclick="toggleMobileNav()" style="display:none;width:40px;height:40px;border:none;background:#f5f7fa;border-radius:8px;cursor:pointer;font-size:20px;align-items:center;justify-content:center">☰</button>
     <div class="app-header-left">
       <span class="app-logo">&#x1F33E;</span>
       <strong style="font-size:15px;color:var(--green-dark)">助农产销</strong>
